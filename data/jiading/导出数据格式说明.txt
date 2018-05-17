@@ -1,0 +1,11 @@
+1-7行已标注，是设备基本信息
+第8行:基站MR数据的条数
+第9行开始每一行为一条MR数据，以,（逗号）分隔：
+	采样时间戳（精确到毫秒）
+	经纬度信息，依次为Longitude、Latitude、Altitude、Accuracy、Speed
+	手机信号信息（对应于原来数据格式的signalRecord字段），依次为Dbm、isGsm、SignalToNoiseRatio、EvdoEcio、Level
+	电池信息，依次为Level、Capacity
+	地磁信息，依次为X、Y、Z方向的强度、X、Y、Z方向的偏转角
+	主连接基站信息，依次为Mcc、Mnc、Lac、Cid、Arfcn、Bsic_psc_pci、Lon、Lat、AsuLevel、SignalLevel、Dbm、Type（GSM or WCDMA or LTE）
+	邻接基站的个数
+	各邻接基站的信息，字段顺序与主连接基站相同
