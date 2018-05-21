@@ -9,8 +9,19 @@ import matplotlib
 import matplotlib.pyplot as plt
 from collections import defaultdict
 
-def load_2g_gongcan(gongcan_2g):
-    gongcan = pd.read_csv(gongcan_2g)
+def load_map(map_file):
+    roadmap = dict()
+    with open(map_file) as f:
+        for line in f:
+            nodes = []
+            data = [float(d) for d in line.strip().split('^')[4:]]
+            rid = int(line.strip().split('^')[0])
+            lngs, lats = data[1::2], data[::2]
+            roadmap[rid] = [(lat, lng) for lat, lng in zip(lats, lngs)]
+    return roadmap
+
+def load_gongcan(gongcan_file):
+    gongcan = pd.read_csv(gongcan_file)
     # merged cell tower, origin cell tower
     m_towers, o_towers = dict(), dict()
     duplicate = defaultdict(list)
@@ -49,26 +60,27 @@ def find_cell_id(old_id, dup_set, dup_ids):
         if old_id in ids:
             return ids[0]
     
-def load_2g(file_2g, gongcan_2g, **feature):
+def load_data(data_file, gongcan_file, **feature):
     merge_tower, neighbor, with_rssi, radio_angle, context = parse_argv(feature)
-    m_towers, o_towers, dup_ids, dup_set = load_2g_gongcan(gongcan_2g)
+    m_towers, o_towers, dup_ids, dup_set = load_gongcan(gongcan_file)
     towers = m_towers if merge_tower else o_towers
     db = dict()
     db_gps = dict()
-    df = pd.read_csv(file_2g)
+    df = pd.read_csv(data_file)
     last_stp = 0
     dup_cnt = 0
-    for i in range(len(df)):
-        piece_data = df.iloc[i]
+    for i, piece_data in df.iterrows():
         rid_1, cid_1, rssi_1, rid_2, cid_2, rssi_2, lat, lng, speed, tr_id, timestp = \
-        int(piece_data['RNCID_1']), int(piece_data['CellID_1']), int(piece_data['Dbm_1']), \
-        int(piece_data['RNCID_2']), int(piece_data['CellID_2']), int(piece_data['Dbm_2']), \
-        float(piece_data['Latitude']), float(piece_data['Longitude']), float(piece_data['Speed']), \
+        piece_data['RNCID_1'], piece_data['CellID_1'], piece_data['Dbm_1'], \
+        piece_data['RNCID_2'], piece_data['CellID_2'], piece_data['Dbm_2'], \
+        piece_data['Latitude'], piece_data['Longitude'], piece_data['Speed'], \
         int(piece_data['TrajID']), int(piece_data['MRTime']) / 1000
         if last_stp == timestp:
             dup_cnt += 1
             continue
         index_1 = o_towers[(rid_1, cid_1)][0] if (rid_1, cid_1) in o_towers.keys() else -1
+        if index_1 == -1:
+            print 'data error! BestCellID is wrong!', 'tr_id=%d, idx=%d, (%s, %s)' % (tr_id, i, rid_1, cid_1)
         index_2 = o_towers[(rid_2, cid_2)][0] if (rid_2, cid_2) in o_towers.keys() else -1
         x, y, _, _ = utm.from_latlon(lat, lng)
         if merge_tower:
@@ -93,19 +105,18 @@ def load_2g(file_2g, gongcan_2g, **feature):
         last_stp = timestp
     print 'Totally duplicate:', dup_cnt
     if context:
-        default_feature = (-1,) if not neighbor else (-1, -1)
-        db = refeature(db, default_feature)
-        db_gps = refeature(db_gps, default_feature)
+        db = refeature(db)
+        db_gps = refeature(db_gps)
     return db, db_gps, towers
 
-def refeature(db, default_fea):
+def refeature(db):
     new_db = dict()
     for tr_id, traj in db.iteritems():
         new_traj = []
         for idx in range(len(traj)):
-            fea_pre = traj[idx - 1][2:-2] if idx > 0 else default_fea
+            fea_pre = traj[idx - 1][2:-2] if idx > 0 else traj[idx][2:-2]
             fea_cur = traj[idx][2:-2]
-            fea_next = traj[idx + 1][2:-2] if idx < len(traj) - 1 else default_fea
+            fea_next = traj[idx + 1][2:-2] if idx < len(traj) - 1 else traj[idx][2:-2]
             point = []
             point.extend(traj[idx][:2])
             point.extend(list(fea_pre))

@@ -17,56 +17,22 @@ import networkx as nx
 import copy
 
 class Sag:
-    def __init__(self, side, bounding_box):
-        self.side = side
-        self.x0, self.x1, self.y0, self.y1 = bounding_box
-        self.width = int(math.ceil((self.x1 - self.x0) / self.side))
-        self.height = int(math.ceil((self.y1 - self.y0) / self.side))
-
-    def utm2index(self, x, y):
-        ix = int((x - self.x0) / self.side)
-        iy = int((y - self.y0) / self.side)
-        return ix, iy
-
-    def utm_outside(self, x, y):
-        return x < self.x0 or x > self.x1 or y < self.y0 or y > self.y1
-
-    def utm2cell(self, x, y):
-        if self.utm_outside(x, y):
-            raise ValueError('utm outside')
-        ix, iy = self.utm2index(x, y)
-        return self.index2cell(ix, iy)
-
-    def index2cell(self, ix, iy):
-        return ix + iy * self.width
-
-    def cell2index(self, cid):
-        y = int(cid / self.width)
-        x = cid % self.width
-        return x, y
-
-    def cell2utm(self, cid):
-        x0, y0, x1, y1 = self.cell2box(cid)
-        return (x0 + x1) / 2.0, (y0 + y1) / 2.0
-
-    def cell2box(self, cid):
-        x, y = self.cell2index(cid)
-        x0, y0 = x * self.side + self.x0, y * self.side + self.y0
-        return x0, y0, x0 + self.side, y0 + self.side
+    def __init__(self, grid, slice_map, state_type):
+        self.grid = grid
+        self.map = slice_map
+        self.state_type = state_type
 
     def get_obsv(self, piece_data):
         return piece_data[1][2:-2]
 
-    def get_cid(self, state):
-        return state[0]
+    def get_big_id(self, rid, cid):
+        for big_id, cells in self.map[rid].iteritems():
+            if cid in cells:
+                return big_id
+        return -1
 
-    def get_rid(self, state):
-        return state[1]
-
-    def cell_vec(self, c1, c2):
-        x1, y1 = self.cell2index(c1)
-        x2, y2 = self.cell2index(c2)
-        return x2 - x1, y2 - y1
+    def uzip(self, state):
+        return state[0], state[1]
 
     def transfer(self, _state, state, more_info=False):
         prob = 1.0
@@ -93,7 +59,7 @@ class Sag:
                 rid, mlat, mlng = point[3], point[4], point[5]
                 x, y, _, _ = utm.from_latlon(mlat, mlng)
                 try:
-                    cid = self.utm2cell(x, y)
+                    cid = self.grid.utm2cell(x, y)
                 except ValueError as err:
                     print tr_id, point
                     continue
@@ -112,7 +78,7 @@ class Sag:
                 total += A[r1][r2]
             for r2 in A[r1].iterkeys():
                 A[r1][r2] /= total
-        self.graph = tools.construct_graph(A)
+        # self.graph = tools.construct_graph(A)
         return A, passes
 
 
@@ -125,10 +91,16 @@ class Sag:
                 piece_match = matched[point[0]]
                 rid, lat, lng = piece_match[3], piece_match[4], piece_match[5]
                 x, y, _, _ = utm.from_latlon(lat, lng)
-                cid = self.utm2cell(x, y)
+                cid = self.grid.utm2cell(x, y)
                 obsv = self.get_obsv(point)
                 # changed here!
-                state = (cid, rid)
+                if self.state_type == 0:
+                    state = cid
+                elif self.state_type == 1:
+                    big_id = self.get_big_id(rid, cid)
+                    if big_id == -1:
+                        print tr_id, idx, rid, cid
+                    state = (cid, big_id)
                 if not D.has_key(state):
                     D[state] = dict()
                 if not D[state].has_key(obsv):
@@ -166,22 +138,22 @@ class Sag:
                     B[obsv][state] *= sum(D[state].itervalues()) * D[state][obsv] * 1.0 / total
         return B, D
 
-    def get_cells(self, cell_db):
-        cells = set()
+    def get_cells(self, cells):
         sp_dict = dict()
-        for traj in cell_db.itervalues():
-            for state in traj:
-                cells.add(self.get_cid(state))
-        for cid in cells:
-            sp_dict[cid] = self.cell2box(cid)
+        for state in cells:
+            if self.state_type == 0:
+                cid = state
+            elif self.state_type == 1:
+                cid, big_id = self.uzip(state)
+            sp_dict[cid] = self.grid.cell2box(cid)
         return sp_dict
 
     def viterbi(self, A, B, traj, k, debug=False):
         f, p = [], defaultdict(dict)
         h = dict()
         obsv = self.get_obsv(traj[0])
-        for cid, prob in B[obsv].iteritems():
-            h[cid] = prob
+        for state, prob in B[obsv].iteritems():
+            h[state] = prob
         f.append(h)
         for idx in range(1, len(traj)):
             obsv = self.get_obsv(traj[idx])
@@ -189,25 +161,27 @@ class Sag:
             h = dict()
             _obsv = self.get_obsv(traj[idx-1])
             _speed, _timestp = traj[idx-1][1][-2:]
-            max_dist = max(_speed, speed) * (timestp - _timestp) + 1.0 * self.side
-            min_dist = min(_speed, speed) * (timestp - _timestp) - 1.0 * self.side
-            for cid, prob in B[obsv].iteritems():
+            max_dist = max(_speed, speed) * (timestp - _timestp) + 1.0 * self.grid.side
+            min_dist = min(_speed, speed) * (timestp - _timestp) - 1.0 * self.grid.side
+            for state, prob in B[obsv].iteritems():
                 max_p = 0
-                x1, y1 = self.cell2index(cid)
-                for _cid in B[_obsv].iterkeys():
-                    if not f[idx-1].has_key(_cid):
+                cid = state
+                x1, y1 = self.grid.cell2index(cid)
+                for _state in B[_obsv].iterkeys():
+                    if not f[idx-1].has_key(_state):
                         continue
-                    x2, y2 = self.cell2index(_cid)
-                    avg_act_dist = (math.sqrt((x2-x1)**2 + (y2-y1)**2)) * self.side
+                    _cid = _state
+                    x2, y2 = self.grid.cell2index(_cid)
+                    avg_act_dist = (math.sqrt((x2-x1)**2 + (y2-y1)**2)) * self.grid.side
                     t1 = t2 = t3 = 0
-                    t1 = f[idx-1][_cid]
-                    t3 = B[obsv][cid]
-                    if not (min_dist - self.side * k <= avg_act_dist <= max_dist + self.side * k):
+                    t1 = f[idx-1][_state]
+                    t3 = B[obsv][state]
+                    if not (min_dist - self.grid.side * k <= avg_act_dist <= max_dist + self.grid.side * k):
                         if debug:
                             print 'idx=%d,(%d,%d)'%(idx, _cid, cid)
                             print 'dist(%d,%d) act(%d)' % (int(min_dist), int(max_dist), int(avg_act_dist))
                         continue
-                    t2 = self.transfer(_cid, cid)
+                    t2 = self.transfer(_state, state)
                     if avg_act_dist < min_dist:
                         t2 *= math.e ** (-(avg_act_dist - min_dist)**2/(min_dist**2)/2)
                     if avg_act_dist > max_dist:
@@ -215,8 +189,8 @@ class Sag:
                     alt_p = t1 + t2 * t3
                     if alt_p > max_p:
                         max_p = alt_p
-                        p[idx][cid] = _cid
-                    h[cid] = max_p
+                        p[idx][state] = _state
+                    h[state] = max_p
             f.append(h)
             if debug:
                 print idx
@@ -231,49 +205,43 @@ class Sag:
         
         return sl, max_prob
 
-    def viterbi_2(self, A, B, traj, k, help_list, debug=False):
+    def viterbi_(self, A, B, traj, k, help_info, debug=False):
         f, p = [], defaultdict(dict)
         h = dict()
         obsv = self.get_obsv(traj[0])
-        help_dict = help_list[0]
+        piece_help = help_info[0]
         for state, prob in B[obsv].iteritems():
-            rid = self.get_rid(state)
-            cid = self.get_cid(state)
-            if help_dict.has_key(rid):
-                h[cid] = prob * help_dict[rid]
+            cid, big_id = self.uzip(state)
+            h[state] = prob * piece_help[big_id]
         f.append(h)
         for idx in range(1, len(traj)):
-            help_dict = help_list[idx]
             obsv = self.get_obsv(traj[idx])
+            piece_help = help_info[idx]
             speed, timestp = traj[idx][1][-2:]
             h = dict()
             _obsv = self.get_obsv(traj[idx-1])
             _speed, _timestp = traj[idx-1][1][-2:]
-            max_dist = max(_speed, speed) * (timestp - _timestp) + 1.0 * self.side
-            min_dist = min(_speed, speed) * (timestp - _timestp) - 1.0 * self.side
+            max_dist = max(_speed, speed) * (timestp - _timestp) + 1.0 * self.grid.side
+            min_dist = min(_speed, speed) * (timestp - _timestp) - 1.0 * self.grid.side
             for state, prob in B[obsv].iteritems():
                 max_p = 0
-                rid = self.get_rid(state)
-                cid = self.get_cid(state)
-                if not help_dict.has_key(rid):
-                    continue
-                x1, y1 = self.cell2index(cid)
+                cid, big_id = self.uzip(state)
+                x1, y1 = self.grid.cell2index(cid)
                 for _state in B[_obsv].iterkeys():
-                    _rid = self.get_rid(state)
-                    _cid = self.get_cid(state)
-                    if not f[idx-1].has_key(_cid):
+                    if not f[idx-1].has_key(_state):
                         continue
-                    x2, y2 = self.cell2index(_cid)
-                    avg_act_dist = (math.sqrt((x2-x1)**2 + (y2-y1)**2)) * self.side
+                    _cid, _big_id = self.uzip(_state)
+                    x2, y2 = self.grid.cell2index(_cid)
+                    avg_act_dist = (math.sqrt((x2-x1)**2 + (y2-y1)**2)) * self.grid.side
                     t1 = t2 = t3 = 0
-                    t1 = f[idx-1][_cid]
-                    t3 = B[obsv][state]
-                    if not (min_dist - self.side * k <= avg_act_dist <= max_dist + self.side * k):
+                    t1 = f[idx-1][_state]
+                    t3 = B[obsv][state] * piece_help[big_id]
+                    if not (min_dist - self.grid.side * k <= avg_act_dist <= max_dist + self.grid.side * k):
                         if debug:
                             print 'idx=%d,(%d,%d)'%(idx, _cid, cid)
                             print 'dist(%d,%d) act(%d)' % (int(min_dist), int(max_dist), int(avg_act_dist))
                         continue
-                    t2 = self.transfer(_cid, cid)
+                    t2 = self.transfer(_state, state)
                     if avg_act_dist < min_dist:
                         t2 *= math.e ** (-(avg_act_dist - min_dist)**2/(min_dist**2)/2)
                     if avg_act_dist > max_dist:
@@ -281,8 +249,8 @@ class Sag:
                     alt_p = t1 + t2 * t3
                     if alt_p > max_p:
                         max_p = alt_p
-                        p[idx][cid] = _cid
-                    h[cid] = max_p
+                        p[idx][state] = _state
+                    h[state] = max_p
             f.append(h)
             if debug:
                 print idx
@@ -290,9 +258,11 @@ class Sag:
         max_prob = max(f[-1].itervalues())
         last_s = max(f[-1].iterkeys(), key=lambda k: f[-1][k])
         for idx in range(len(traj)-1, 0, -1):
-            sl.append(last_s)
+            cid, big_id = self.uzip(last_s)
+            sl.append(cid)
             last_s = p[idx][last_s]
-        sl.append(last_s)
+        cid, big_id = self.uzip(last_s)
+        sl.append(cid)
         sl.reverse()
         
         return sl, max_prob
@@ -307,25 +277,25 @@ class Sag:
             obsv = self.get_obsv(point)
             speed, timestp = point[1][-2:]
             x, y, _, _ = utm.from_latlon(lat, lng)
-            state = self.utm2cell(x, y)
+            state = self.grid.utm2cell(x, y)
             traj_.append((state, obsv, speed, timestp))
         # print traj_
         state_, obsv, _speed, _timestp = traj_[0]
-        x1, y1 = self.cell2index(state_)
+        x1, y1 = self.grid.cell2index(state_)
         prob = 1.0 * B[obsv][state_]
         states.append(state_)
         # print state_, prob
         for idx in range(1, len(traj_)):
             state, obsv, speed, timestp = traj_[idx]
-            max_dist = max(_speed, speed) * (timestp - _timestp) + 1.0 * self.side
-            min_dist = min(_speed, speed) * (timestp - _timestp) - 1.0 * self.side
-            x2, y2 = self.cell2index(state)
-            avg_act_dist = (math.sqrt((x2-x1)**2 + (y2-y1)**2)) * self.side
+            max_dist = max(_speed, speed) * (timestp - _timestp) + 1.0 * self.grid.side
+            min_dist = min(_speed, speed) * (timestp - _timestp) - 1.0 * self.grid.side
+            x2, y2 = self.grid.cell2index(state)
+            avg_act_dist = (math.sqrt((x2-x1)**2 + (y2-y1)**2)) * self.grid.side
             
             transf = obsvf = 0
             transf = self.transfer(state_, state)
             obsvf = B[obsv][state]
-            if not (min_dist - self.side*k <= avg_act_dist <= max_dist + self.side*k):
+            if not (min_dist - self.grid.side*k <= avg_act_dist <= max_dist + self.grid.side*k):
                 if debug:
                     print 'idx=%d,(%d,%d)'%(idx, state_, state)
                     print '_speed=%s speed=%s gap=%s side=%s' % (_speed, speed, timestp - _timestp, self.side)
@@ -371,30 +341,33 @@ class Sag:
             traj = test[tr_id]
             matched = match_res[tr_id]
             avg = 0.0
-            self.utm_test[tr_id], self.utm_pred[tr_id] = [], []
-            self.cid_test[tr_id], self.cid_pred[tr_id] = [], []
-            self.gps_test[tr_id], self.gps_pred[tr_id] = [], []
-            for idx, point in enumerate(traj):
-                # ground truth
-                lat, lng = matched[point[0]][4:6]
-                x, y, _, _ = utm.from_latlon(lat, lng)
-                cid = pdt[idx]
-                # prediction
-                px, py = self.cell2utm(cid)
+            try:
+                self.utm_test[tr_id], self.utm_pred[tr_id] = [], []
+                self.cid_test[tr_id], self.cid_pred[tr_id] = [], []
+                self.gps_test[tr_id], self.gps_pred[tr_id] = [], []
+                for idx, point in enumerate(traj):
+                    # ground truth
+                    lat, lng = matched[point[0]][4:6]
+                    x, y, _, _ = utm.from_latlon(lat, lng)
+                    cid = pdt[idx]
+                    # prediction
+                    px, py = self.grid.cell2utm(cid)
 
-                cx, cy = self.utm2index(x, y)
-                gx, gy = utm.to_latlon(px, py, 51, 'R')
-                # for disp
-                self.utm_test[tr_id].append((x, y))
-                self.utm_pred[tr_id].append((px, py))
-                self.gps_test[tr_id].append((lat, lng))
-                self.gps_pred[tr_id].append((gx, gy))
-                self.cid_test[tr_id].append((cx, cy))
-                self.cid_pred[tr_id].append(self.cell2index(cid))
-                dist = math.sqrt((px - x)**2 + (py - y)**2)
-                precision.append(dist)
-                avg += dist
-            precision_[tr_id] = avg / len(traj)
+                    cx, cy = self.grid.utm2index(x, y)
+                    gx, gy = utm.to_latlon(px, py, 51, 'R')
+                    # for disp
+                    self.utm_test[tr_id].append((x, y))
+                    self.utm_pred[tr_id].append((px, py))
+                    self.gps_test[tr_id].append((lat, lng))
+                    self.gps_pred[tr_id].append((gx, gy))
+                    self.cid_test[tr_id].append((cx, cy))
+                    self.cid_pred[tr_id].append(self.grid.cell2index(cid))
+                    dist = math.sqrt((px - x)**2 + (py - y)**2)
+                    precision.append(dist)
+                    avg += dist
+                precision_[tr_id] = avg / len(traj)
+            except IndexError as e:
+                continue
         return precision, precision_
 
 

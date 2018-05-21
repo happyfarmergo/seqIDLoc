@@ -24,7 +24,7 @@ const_prefix = (
     "<body>\n"
     "<div id=\"map\"></div>\n"
     "<script>\n"
-    "var map = L.map('map').setView([%s, %s], 15);\n"
+    "var map = L.map('map').setView([%s, %s], 16);\n"
     "L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {\n"
     "maxZoom: 20,\n"
     "attribution: 'Map data &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors, ' +\n"

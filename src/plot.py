@@ -74,18 +74,41 @@ def draw_traj_on_cells(traj, ca, axis, color):
         ca.add_patch(circle)
         cnt += 1
 
-def draw_cells(kdtree, ca, axis, debug=False):
+def draw_cells(kdtree, ca, axis, color, debug=False):
     cnt = 0
     for cid, bound in kdtree.iteritems():
         x0, y0, x1, y1 = bound
         mx, my = (x0 + x1) / 2, (y0 + y1) / 2
-        rec = Rectangle((x0, y0), width=x1 - x0, height=y1 - y0, ec='k')
+        rec = Rectangle((x0, y0), width=x1 - x0, height=y1 - y0, ec=color, fill=False)
         if debug:
             ca.text(mx, my, str(cid), color='k', fontsize=10)
         ca.add_patch(rec)
         # if cnt >=100:
             # break
         cnt += 1
+
+
+def draw_map(roadmap, ca, axis, debug=False):
+    for rid, locs in roadmap.iteritems():
+        if rid!=164316057:
+            continue
+        xs, ys = [], []
+        for lat, lng in locs:
+            x, y, _, _ = utm.from_latlon(lat, lng)
+            xs.append(x)
+            ys.append(y)
+        line = lines.Line2D(xs, ys, linewidth=2, color=colors[rid%len(colors)])
+        ca.add_line(line)
+
+
+def draw_line(coors, ca, axis, color, debug=False):
+    xs, ys = [], []
+    for x, y in coors:
+        xs.append(x)
+        ys.append(y)
+    line = lines.Line2D(xs, ys, linewidth=2, color=color)
+    ca.add_line(line)
+
 
 def draw_barplot(summary, title, xlabel, ylabel):
     plt.close()

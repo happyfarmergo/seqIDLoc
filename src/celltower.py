@@ -3,6 +3,7 @@ import datetime
 import json
 import logging
 import logging.config
+import math
 
 import time
 
@@ -26,19 +27,21 @@ class CellTower:
 
     def get_tower(self, towers):
         result = []
+        failed = []
         cnt = 0 
         for rncid, cellid in towers:
-            if rncid == 0:
+            if cellid == -1 or math.isnan(cellid):
                 continue
             url = self.base_url + 'bs=460,01,%d,%d&output=json' % (rncid, cellid)
             req = self.session.get(url=url, headers=self.headers)
             data = json.loads(req.text, encoding='utf-8')
             if data['status']!=200:
                 print 'error:(%d,%d)' % (rncid, cellid)
+                failed.append((rncid, cellid))
                 continue
             lat, lng = float(data['result'][0]['lats']), float(data['result'][0]['lngs'])
             result.append((rncid, cellid, lat, lng, -1, -1))
             print cnt
             time.sleep(3)
             cnt += 1
-        return result
+        return result, failed

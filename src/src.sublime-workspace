@@ -4,8 +4,44 @@
 		"selected_items":
 		[
 			[
+				"state",
+				"state_type"
+			],
+			[
 				"stat",
-				"state〔variable〕"
+				"state"
+			],
+			[
+				"piece",
+				"piece_help〔variable〕"
+			],
+			[
+				"piec",
+				"piece_help〔variable〕"
+			],
+			[
+				"colo",
+				"color='k"
+			],
+			[
+				"line",
+				"linewidth=2"
+			],
+			[
+				"slice",
+				"slice_map〔variable〕"
+			],
+			[
+				"data",
+				"data_type"
+			],
+			[
+				"goncan",
+				"gongcan_file〔argument〕"
+			],
+			[
+				"gongcan",
+				"gongcan_file"
 			],
 			[
 				"he",
@@ -50,10 +86,6 @@
 			[
 				"st",
 				"states〔variable〕"
-			],
-			[
-				"state",
-				"state__"
 			],
 			[
 				"stae",
@@ -104,10 +136,6 @@
 				"gps_pred〔variable〕"
 			],
 			[
-				"piece",
-				"piece_match"
-			],
-			[
 				"fil",
 				"filename〔variable〕"
 			],
@@ -150,10 +178,6 @@
 			[
 				"const",
 				"const_circle〔variable〕"
-			],
-			[
-				"colo",
-				"colors〔variable〕"
 			],
 			[
 				"const_circ",
@@ -490,53 +514,11 @@
 			[
 				"pad",
 				"padding-bottom"
-			],
-			[
-				"cluster",
-				"cluster_labels"
-			],
-			[
-				"sil",
-				"silhouette"
-			],
-			[
-				"pre",
-				"pre_pca〔function〕"
-			],
-			[
-				"com",
-				"component〔variable〕"
-			],
-			[
-				"e",
-				"enumerate"
-			],
-			[
-				"n_",
-				"n_eps"
 			]
 		]
 	},
 	"buffers":
 	[
-		{
-			"file": "hmm.py",
-			"settings":
-			{
-				"buffer_size": 4296,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "uni_hmm.py",
-			"settings":
-			{
-				"buffer_size": 15656,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		}
 	],
 	"build_system": "Packages/LaTeXTools/LaTeX.sublime-build",
 	"build_system_choices":
@@ -670,11 +652,79 @@
 	},
 	"expanded_folders":
 	[
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/src",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/src/data_cleaning"
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/data_cleaning"
 	],
 	"file_history":
 	[
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/data_cleaning/noise.py",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/uni_hmm.py",
+		"/H/ChromeDownload/llncs2e/readme.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/pygrid.py",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/plot.py",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/tools.py",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/data_cleaning/load.py",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading_map/jiading_EdgeGeometry.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/grid.py",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/siping_map/Siping_Edges.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/siping_map/Siping_Nodes.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading_map/jiading_Nodes.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/siping_map/Siping_EdgeGeometry.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/celltower.py",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/uploads/0.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/display/siping_map_.html",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/uploads/11.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/uploads/5.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/uploads/14.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/uploads/30.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/uploads/28.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/uploads/27.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/uploads/25.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/uploads/21.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/uploads/2.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/uploads/1.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/display_osm.py",
+		"/C/Users/ljh18/AppData/Local/Temp/HZ$D.718.4624/HZ$D.718.4625/siping/15.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/display/siping_map.html",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading_2g/raw/1.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading_2g/trajs/1.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading_4g/trajs/38.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading_4g/trajs/43.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading_4g/trajs/16.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/display/jiading_2g/gps.html",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/37.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/44.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/导出数据格式说明.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/0.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/3.txt",
+		"/C/Users/ljh18/Pictures/me.html",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/43.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/26.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/10.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/1.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/uploads/16.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/uploads/15.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/9.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/8.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/7.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/6.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/5.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/4.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/55.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/53.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/40.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/30.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/11.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/12.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/13.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs4/14.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/display/shanghai_osm_.html",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/display/shanghai_osm.html",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/uploads/11.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/uploads/20.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/uploads/9.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs2/2.txt",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/hmm.py",
 		"/C/Users/ljh18/AppData/Roaming/Tencent/WeChat/WeChat Files/xiajia2325439116/Files/seminar/index.html",
 		"/D/Programs/Anaconda2/Lib/site-packages/jupyterthemes/myset.txt",
 		"/D/Programs/Anaconda2/Lib/site-packages/jupyterthemes/stylefx.py",
@@ -734,75 +784,7 @@
 		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/uploads/55.txt",
 		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/uploads/56.txt",
 		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/uploads/57.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/uploads/58.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/raw/54.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/uploads/10.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/uploads/jinhua_485_1804200952_1804201017.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/src/tools.py",
-		"/D/Programs/JetBrains/PycharmProjects/hw4/CLEAN/preprocessing.py",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/src/display_osm.py",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/matching_out/2.txt.HMM.G5.csv",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/test/0.html",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/matching_out/7.txt.HMM.G5.csv",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/trajs/0.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/matching_out/0.txt.HMM.G5.csv",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/matching_out/9.txt.HMM.G5.csv",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/trajs/8.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/matching_out/8.txt.HMM.G5.csv",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/trajs/9.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/trajs/7.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/raw/51.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/map_matching/HMMM/preprocessing/osm_matcher.py",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/map_matching/HMMM/map_matching/viterbi_path.py",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/map_matching/HMMM/map_matching/map_matching.py",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/map_matching/HMMM/preprocessing/mm_parsing.py",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/map_matching/HMMM/preprocessing/query_candiates.py",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/matching_out/26.txt.HMM.G5.csv",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/map_matching/HMMM/preprocessing/my_matcher.py",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/raw/18.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/matching_out/17.txt.HMM.G5.csv",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/trajs/17.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/trajs/16.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/matching_out/16.txt.HMM.G5.csv",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/matching_out/13.txt.HMM.G5.csv",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/map_matching/experiments.py",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/map_matching/main.py",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/display/path/0.html",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/src/celltower.py",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/raw/13.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/嘉定校区4_1033_1710291611_1710291629.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/raw/14.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/raw/29.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/raw/30.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/0410jiadingtosiping_1572_1804102055_1804102149.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/0410siping2home_248_1804102153_1804102201.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/0411tojiading_1531_1804110647_1804110740.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/0416h2jiading_2878_1804160712_1804160852.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/04152home_691_1804151650_1804151714.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/0415h2np_778_1804151354_1804151421.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/0415drum2h_578_1804150955_1804151015.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/0415h2drum_549_1804150831_1804150850.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/0409home2office_2493_1804090711_1804090837.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/0408ruijin2_704_1804080937_1804081001.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/0408ruijin_1126_1804080840_1804080919.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/0407drumb_619_1804071002_1804071024.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/0407drum1_756_1804070920_1804070947.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/20180406line8b_117_1804061603_1804061607.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/0410tokiading_1333_1804100640_1804100727.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/0409night_168_1804092226_1804092232.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/20180406raohkpark_1360_1804061429_1804061517.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/金华 济世楼 新天地_92_1804072229_1804072231.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/金华 test2_140_1803262028_1803262031.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/金华 食堂 济事楼_85_1803261733_1803261736.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/金华 济事楼 食堂_95_1803261711_1803261714.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/金华 济世楼 宿舍_308_1803252154_1803252159.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/siping-market4G_162_1803231643_1803231646.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/siping_library_110_1803231630_1803231633.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/siping_department_50_1803231651_1803231653.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/siping_basketball_73_1803231654_1803231656.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/嘉定校区2_421_1710281617_1710281635.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/冯涛 食堂到学院_22_1710281212_1710281223.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/upload/uploads/宿舍到实验室陈柏君_19_1710281149_1710281158.txt"
+		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/uploads/58.txt"
 	],
 	"find":
 	{
@@ -824,6 +806,13 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"self.",
+			".openTooltip()",
+			"{permanent:true, interactive:true}",
+			".openTooltip()",
+			"{permanent:true, interactive:true})",
+			"{permanent:true, interactive:true}",
+			".openTooltip()",
 			"135421965",
 			"sag",
 			"Point missing",
@@ -944,14 +933,7 @@
 			"[",
 			"article",
 			" ",
-			"GridItem_DoubleClick",
-			"OpenItem",
-			"TreeView_New",
-			"UpdateTreeView",
-			"mHistoryPath",
-			"UpdateShowGrid",
-			"fileInfo",
-			"newFileNode"
+			"GridItem_DoubleClick"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -959,6 +941,11 @@
 		"regex": false,
 		"replace_history":
 		[
+			"",
+			"{permanent:false, interactive:false}",
+			"",
+			"{permanent:false, interactive:false}",
+			"",
 			"self",
 			"piece_data",
 			"2",
@@ -1001,82 +988,8 @@
 	"groups":
 	[
 		{
-			"selected": 1,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "hmm.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4296,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3364,
-								3364
-							]
-						],
-						"settings":
-						{
-							"SL.13.region_keys":
-							[
-							],
-							"auto_complete": false,
-							"encoding_helper_encoding": "UTF-8",
-							"encoding_thread_running": true,
-							"is_init_dirty_state": false,
-							"origin_encoding": "ASCII",
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2679.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "uni_hmm.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 15656,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								14311,
-								14311
-							]
-						],
-						"settings":
-						{
-							"auto_complete": false,
-							"encoding_helper_encoding": "UTF-8",
-							"encoding_thread_running": true,
-							"is_init_dirty_state": false,
-							"origin_encoding": "ASCII",
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 8671.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				}
 			]
 		}
 	],

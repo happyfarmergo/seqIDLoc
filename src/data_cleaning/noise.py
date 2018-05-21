@@ -2,6 +2,21 @@ import utm
 import math
 import tools
 
+def get_config(data_set, data_type):
+    max_dist = 100
+    min_dist = 100
+    min_len = 10
+    max_again = 10
+    if data_set == 'jiading' and data_type == '2g':
+        pass
+    elif data_set == 'jiading' and data_type == '4g':
+        pass
+    elif data_set == 'siping' and data_type == '2g':
+        pass
+    elif data_set == 'siping' and data_type == '4g':
+        min_dist = 50
+    return max_dist, min_dist, min_len, max_again
+
 def bounding_box(traj, a, b):
     coors = []
     if float(traj[a][0]) < 1000:
@@ -70,7 +85,9 @@ def clean_db(db, max_dist=200, min_dist=100, min_len=10, max_again=10, debug=Fal
             dbs[idx] = traj[c:d] if delta > max_again else traj[a:b]
             if delta > max_again:
                 out += 'trimed[%d,%d] ' % (c - a, b - d)
-            out += 'keep[%d:%d]as id=%d\t' % (c, d-1, idx)
+                out += 'keep[%d:%d]as id=%d\t' % (c, d-1, idx)
+            else:
+                out += 'keep[%d:%d]as id=%d\t' % (a, b, idx)
             idx += 1
         if debug:
             print out
@@ -108,16 +125,20 @@ def clean_testset(sag, test, match_res, B, debug=False):
     for tr_id in test.iterkeys():
         traj = test[tr_id]
         matched = match_res[tr_id]
-        new_points = [] 
+        new_points = []
+        # piece_help = help_info[tr_id]
         for idx, point in enumerate(traj):
-            piece_match = matched[point[0]]
-            assert piece_match[0] == point[1][-1]
-            rid, lat, lng = piece_match[3], piece_match[4], piece_match[5]
-            x, y, _, _ = utm.from_latlon(lat, lng)
-            cid = sag.utm2cell(x, y)
             obsv = sag.get_obsv(point)
-            state = (cid, rid)
-            if B.has_key(obsv) and B[obsv].has_key(state):
+            # piece_match = matched[point[0]]
+            # assert piece_match[0] == point[1][-1]
+            # rid, lat, lng = piece_match[3], piece_match[4], piece_match[5]
+            # x, y, _, _ = utm.from_latlon(lat, lng)
+            # cid = sag.grid.utm2cell(x, y)
+            # big_id = sag.get_big_id(rid, cid)
+            # # changed here!
+            # state = (cid, big_id)
+            # if B.has_key(obsv) and B[obsv].has_key(state):
+            if B.has_key(obsv):
                 new_points.append(point)
         new_test[tr_id] = new_points
         if len(traj)!=len(new_points) and debug:
