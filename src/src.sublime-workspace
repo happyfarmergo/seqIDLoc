@@ -4,6 +4,34 @@
 		"selected_items":
 		[
 			[
+				"tra",
+				"traj〔variable〕"
+			],
+			[
+				"trai",
+				"train"
+			],
+			[
+				"uni",
+				"uni_prec_dict"
+			],
+			[
+				"unipre",
+				"uni_prec"
+			],
+			[
+				"data",
+				"datatype"
+			],
+			[
+				"train",
+				"train_set"
+			],
+			[
+				"test",
+				"test_set"
+			],
+			[
 				"state",
 				"state_type"
 			],
@@ -30,10 +58,6 @@
 			[
 				"slice",
 				"slice_map〔variable〕"
-			],
-			[
-				"data",
-				"data_type"
 			],
 			[
 				"goncan",
@@ -100,20 +124,12 @@
 				"rssi_2〔variable〕"
 			],
 			[
-				"tra",
-				"train〔variable〕"
-			],
-			[
 				"fea",
 				"fea_next〔variable〕"
 			],
 			[
 				"defa",
 				"default_fea〔argument〕"
-			],
-			[
-				"test",
-				"test_list"
 			],
 			[
 				"has",
@@ -150,10 +166,6 @@
 			[
 				"poin",
 				"point〔variable〕"
-			],
-			[
-				"train",
-				"train_ids〔variable〕"
 			],
 			[
 				"const_cir",
@@ -502,18 +514,6 @@
 			[
 				"inli",
 				"inline-flex"
-			],
-			[
-				"margin",
-				"margin-top"
-			],
-			[
-				"ali",
-				"align-items"
-			],
-			[
-				"pad",
-				"padding-bottom"
 			]
 		]
 	},
@@ -657,13 +657,27 @@
 	],
 	"file_history":
 	[
-		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/data_cleaning/noise.py",
 		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/uni_hmm.py",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/data_cleaning/load.py",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/sacred_hmm.py",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/regresser.py",
+		"/C/Users/ljh18/AppData/Roaming/Tencent/WeChat/WeChat Files/xiajia2325439116/Files/seminar/index.html",
+		"/C/Users/ljh18/AppData/Local/Temp/HZ$D.345.1502/HZ$D.345.1503/Toolkit/localization/algorithms/HMM.py",
+		"/C/Users/ljh18/AppData/Local/Temp/HZ$D.345.1502/HZ$D.345.1504/Toolkit/localization/algorithms/LocalizeUEpf.py",
+		"/C/Users/ljh18/AppData/Local/Temp/HZ$D.345.1502/HZ$D.345.1505/Toolkit/localization/algorithms/ParticleFilter.py",
+		"/D/Programs/JetBrains/PycharmProjects/RoadInference/Src/online_infer.py",
+		"/D/Programs/JetBrains/PycharmProjects/nTrainMap/src/trajmap.py",
+		"/D/Programs/JetBrains/PycharmProjects/nTrainMap/src/display.py",
+		"/D/Programs/JetBrains/PycharmProjects/RoadInference/Src/computer.py",
+		"/D/Programs/JetBrains/PycharmProjects/RoadInference/Src/bootstrap.py",
+		"/D/Programs/JetBrains/PycharmProjects/RoadInference/Src/const.py",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/hmm.py",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/split.py",
+		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/data_cleaning/noise.py",
 		"/H/ChromeDownload/llncs2e/readme.txt",
 		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/pygrid.py",
 		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/plot.py",
 		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/tools.py",
-		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/data_cleaning/load.py",
 		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading_map/jiading_EdgeGeometry.txt",
 		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/grid.py",
 		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/siping_map/Siping_Edges.txt",
@@ -724,8 +738,6 @@
 		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/uploads/20.txt",
 		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/uploads/9.txt",
 		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/data/jiading/trajs2/2.txt",
-		"/D/Programs/JetBrains/PycharmProjects/seqIDLoc/src/hmm.py",
-		"/C/Users/ljh18/AppData/Roaming/Tencent/WeChat/WeChat Files/xiajia2325439116/Files/seminar/index.html",
 		"/D/Programs/Anaconda2/Lib/site-packages/jupyterthemes/myset.txt",
 		"/D/Programs/Anaconda2/Lib/site-packages/jupyterthemes/stylefx.py",
 		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/src/data_cleaning/noise.py",
@@ -744,8 +756,6 @@
 		"/C/Users/ljh18/Desktop/SS/pac.txt",
 		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/uploads/73.txt",
 		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/导出数据格式说明.txt",
-		"/D/Programs/JetBrains/PycharmProjects/RoadInference/Src/computer.py",
-		"/D/Programs/JetBrains/PycharmProjects/RoadInference/Src/online_infer.py",
 		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/raw/64.txt",
 		"/C/Users/ljh18/Desktop/nohup50.out",
 		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/matching_out/22.txt.HMM.G_gap=5_dist=50.txt",
@@ -774,17 +784,7 @@
 		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/raw/27.txt",
 		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/raw/73.txt",
 		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/raw/11.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/raw/10.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/matching_out/38.txt.HMM.G5.csv",
-		"/D/Programs/JetBrains/PycharmProjects/nTrainMap/src/trajmap.py",
-		"/D/Programs/JetBrains/PycharmProjects/nTrainMap/src/sacred_trajmap.py",
-		"/D/Programs/JetBrains/PycharmProjects/nTrainMap/src/plsa.py",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/uploads/60.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/uploads/59.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/uploads/55.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/uploads/56.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/uploads/57.txt",
-		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/uploads/58.txt"
+		"/D/Programs/JetBrains/PycharmProjects/Data/MR Data/data/jiading/raw/10.txt"
 	],
 	"find":
 	{
@@ -806,6 +806,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"red",
 			"self.",
 			".openTooltip()",
 			"{permanent:true, interactive:true}",
@@ -932,8 +933,7 @@
 			"1",
 			"[",
 			"article",
-			" ",
-			"GridItem_DoubleClick"
+			" "
 		],
 		"highlight": true,
 		"in_selection": false,

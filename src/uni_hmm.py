@@ -367,7 +367,33 @@ class Sag:
                     avg += dist
                 precision_[tr_id] = avg / len(traj)
             except IndexError as e:
+                print 'IndexError at tr_id=', tr_id
                 continue
         return precision, precision_
 
 
+def predict(sag, db_data, A, B):
+    cell_result = dict()
+    statistic = []
+    failed_ids = []
+    for tr_id, traj in db_data.iteritems():
+        speeds = [point[1][-2] for point in traj]
+        k = math.floor(np.std(speeds))
+        k0 = k
+        noexcept = False
+        while noexcept is False:
+            noexcept = True
+            try:
+                sl, max_prob = sag.viterbi(A, B, traj, k)
+            except:
+                noexcept = False
+                k += 1
+        # prob = sag.backforward(A, B, traj, match_res[tr_id], k, debug=False)
+        prob = 0
+        statistic.append((tr_id, max_prob, prob))
+        cell_result[tr_id] = sl
+        if k!=k0:
+            failed_ids.append(tr_id)
+        # print 'TrajID=' + str(tr_id)
+        # print 'Failed=', failed_ids, len(failed_ids)
+    return cell_result, statistic, failed_ids

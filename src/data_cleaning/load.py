@@ -46,10 +46,12 @@ def load_gongcan(gongcan_file):
     return m_towers, o_towers, dup_ids, dup_set
 
 def parse_argv(feature):
-    merge_tower = feature['merge_tower']
+    # merge_tower = feature['merge_tower']
+    merge_tower = False
     neighbor = feature['neighbor']
     with_rssi = feature['with_rssi']
-    radio_angle = feature['radio_angle']
+    # radio_angle = feature['radio_angle']
+    radio_angle = False
     context = feature['context']
     return merge_tower, neighbor, with_rssi, radio_angle, context
 
