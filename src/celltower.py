@@ -30,7 +30,8 @@ class CellTower:
         failed = []
         cnt = 0 
         for rncid, cellid in towers:
-            if cellid == -1 or math.isnan(cellid):
+            if cellid == -1 or math.isnan(cellid) or cellid==-999:
+                print 'id error'
                 continue
             url = self.base_url + 'bs=460,01,%d,%d&output=json' % (rncid, cellid)
             req = self.session.get(url=url, headers=self.headers)

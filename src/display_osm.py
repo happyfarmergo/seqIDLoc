@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-import eviltransform as ets
+import tools
 
 const_prefix = (
     "<!DOCTYPE html>\n"
@@ -43,9 +43,9 @@ const_suffix = (
 const_path = (
     "L.polyline(%s, {\n"
     "color: '%s',\n"
-    "weight: 2,\n"
+    "weight: 5,\n"
     "opacity: 0.6,\n"
-    "}).addTo(map).bindTooltip('%s',{permanent:true, interactive:true}).openTooltip();\n"
+    "}).addTo(map);\n"
 )
 
 const_marker = (
@@ -149,6 +149,41 @@ def path_to_html(obsv, edges, out_fname):
         html += const_coor % (rid, coors)
         html += const_path % ('coor_' + str(rid), colors[rid % len(colors)], 'rid=' + str(e_id))
         rid += 1
+    html += const_suffix
+    with open(out_fname, 'w') as o_file:
+        o_file.write(html)
+
+def paper_draw_traj(traj, out_fname):
+    c_lat, c_lng = traj[0][:2]
+    html = const_prefix % (c_lat, c_lng)
+
+    # cut points
+    last_id = -1
+    ranges = []
+    for i in range(len(traj)):
+        cur_id = traj[i][2]
+        if last_id != cur_id:
+            ranges.append(i)
+        last_id = cur_id
+    ranges.append(len(traj))
+    rid = 0
+    for a, b in tools.pairwise(ranges):
+        p_str = []
+        coors = '['
+        for idx, point in enumerate(traj[a:b]):
+            lat, lng = float(point[0]), float(point[1])
+            marker = '[%s, %s]' % (lat, lng)
+            p_str.append(marker)
+        coors += ', '.join(p_str) + ']'
+        html += const_coor % (rid, coors)
+        html += const_path % ('coor_' + str(rid), colors[rid % len(colors)])
+        rid += 1
+
+    for idx in ranges:
+        point = traj[idx] if idx < len(traj) else traj[idx - 1]
+        lat, lng = float(point[0]), float(point[1])
+        marker = '[%s, %s]' % (lat, lng)
+        html += const_circle % (marker, 'red', 5)
     html += const_suffix
     with open(out_fname, 'w') as o_file:
         o_file.write(html)

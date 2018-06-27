@@ -38,8 +38,8 @@ def cfg():
     dataset = 'jiading'
     datatype = '2g'
     side = 30
-    neighbor = False
-    with_rssi = False
+    neighbor = 2
+    with_rssi = 0
     context = False
 
 @ex.automain
@@ -61,7 +61,7 @@ def main(dataset, datatype, side, neighbor, with_rssi, context, _log, _run):
     '''
     Load Raw Data Set
     '''
-    db, db_gps, towers = load.load_data(data_file, gongcan_file, merge_tower=False, neighbor=neighbor, with_rssi=with_rssi, radio_angle=False, context=context)
+    db, db_gps, towers = load.load_data(data_file, gongcan_file, neighbor=neighbor, with_rssi=with_rssi, context=context)
     print 'len(db):', len(db), 'len(towers):', len(towers)
 
     '''

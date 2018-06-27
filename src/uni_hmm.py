@@ -49,36 +49,67 @@ class Sag:
         #     return prob
         return prob
 
-    def get_trans_mat(self, match_res, match_ids):
+    # def get_trans_mat(self, match_res):
+    #     A = dict()
+    #     passes = dict()
+    #     for tr_id in match_res.iterkeys():
+    #         traj = match_res[tr_id]
+    #         passed = []
+    #         for idx, point in enumerate(traj):
+    #             rid, mlat, mlng = point[3], point[4], point[5]
+    #             x, y, _, _ = utm.from_latlon(mlat, mlng)
+    #             try:
+    #                 cid = self.grid.utm2cell(x, y)
+    #             except ValueError as err:
+    #                 print tr_id, point
+    #                 continue
+    #             passed.append(cid)
+    #         passes[tr_id] = passed
+    #     for tr_id, passed in passes.iteritems():
+    #         for c1, c2 in tools.pairwise(passed):
+    #             if c1 not in A.keys():
+    #                 A[c1] = dict()
+    #             if c2 not in A[c1].keys():
+    #                 A[c1][c2] = 0
+    #             A[c1][c2] += 1
+    #     for r1 in A.iterkeys():
+    #         total = 0.0
+    #         for r2 in A[r1].iterkeys():
+    #             total += A[r1][r2]
+    #         for r2 in A[r1].iterkeys():
+    #             A[r1][r2] /= total
+    #     # self.graph = tools.construct_graph(A)
+    #     return A, passes
+
+    def get_trans_mat(self, match_res):
         A = dict()
         passes = dict()
-        for tr_id in match_ids:
+        for tr_id in match_res.iterkeys():
             traj = match_res[tr_id]
             passed = []
             for idx, point in enumerate(traj):
-                rid, mlat, mlng = point[3], point[4], point[5]
+                timestp, rid, mlat, mlng = point[0], point[3], point[4], point[5]
                 x, y, _, _ = utm.from_latlon(mlat, mlng)
                 try:
                     cid = self.grid.utm2cell(x, y)
                 except ValueError as err:
                     print tr_id, point
                     continue
-                passed.append(cid)
+                passed.append((cid, timestp))
             passes[tr_id] = passed
         for tr_id, passed in passes.iteritems():
-            for c1, c2 in tools.pairwise(passed):
-                if c1 not in A.keys():
-                    A[c1] = dict()
-                if c2 not in A[c1].keys():
-                    A[c1][c2] = 0
-                A[c1][c2] += 1
-        for r1 in A.iterkeys():
-            total = 0.0
-            for r2 in A[r1].iterkeys():
-                total += A[r1][r2]
-            for r2 in A[r1].iterkeys():
-                A[r1][r2] /= total
-        # self.graph = tools.construct_graph(A)
+            for step in range(1, len(passed)):
+                for head in range(len(passed)-step):
+                    c1, t1 = passed[head]
+                    c2, t2 = passed[head + step]
+                    d_t = t2 - t1
+                    if d_t not in A.keys():
+                        A[d_t] = dict()
+                    if c1 not in A[d_t].keys():
+                        A[d_t][c1] = dict()
+                    if c2 not in A[d_t][c1].keys():
+                        A[d_t][c1][c2] = 0
+                    A[d_t][c1][c2] += 1
         return A, passes
 
 
@@ -148,6 +179,25 @@ class Sag:
             sp_dict[cid] = self.grid.cell2box(cid)
         return sp_dict
 
+    def valid_trans(self, A, dt_1, dt_2, _cid, cid):
+        for dt in range(dt_1, dt_2 + 1):
+            if dt not in A.keys() or _cid not in A[dt].keys():
+                continue
+            if cid in A[dt][_cid].keys():
+                return True
+        return False
+
+    def transfer(self, A, dt_1, dt_2, _cid, cid):
+        total = 0
+        cnt = 0
+        for dt in range(dt_1, dt_2 + 1):
+            if dt not in A.keys() or _cid not in A[dt].keys():
+                continue
+            total += sum(num for k, num in A[dt][_cid].iteritems())
+            if cid in A[dt][_cid].keys():
+                cnt += A[dt][_cid][cid]
+        return cnt / float(total)
+
     def viterbi(self, A, B, traj, k, debug=False):
         f, p = [], defaultdict(dict)
         h = dict()
@@ -161,6 +211,9 @@ class Sag:
             h = dict()
             _obsv = self.get_obsv(traj[idx-1])
             _speed, _timestp = traj[idx-1][1][-2:]
+            delta_t = timestp - _timestp
+            sigma = 0.2
+            dt_1, dt_2 = (1-sigma)*delta_t, (1+sigma)*delta_t
             max_dist = max(_speed, speed) * (timestp - _timestp) + 1.0 * self.grid.side
             min_dist = min(_speed, speed) * (timestp - _timestp) - 1.0 * self.grid.side
             for state, prob in B[obsv].iteritems():
@@ -171,6 +224,8 @@ class Sag:
                     if not f[idx-1].has_key(_state):
                         continue
                     _cid = _state
+                    if not self.valid_trans(A, dt_1, dt_2, _cid, cid):
+                        continue
                     x2, y2 = self.grid.cell2index(_cid)
                     avg_act_dist = (math.sqrt((x2-x1)**2 + (y2-y1)**2)) * self.grid.side
                     t1 = t2 = t3 = 0
@@ -181,7 +236,8 @@ class Sag:
                             print 'idx=%d,(%d,%d)'%(idx, _cid, cid)
                             print 'dist(%d,%d) act(%d)' % (int(min_dist), int(max_dist), int(avg_act_dist))
                         continue
-                    t2 = self.transfer(_state, state)
+                    # t2 = self.transfer(_cid, cid)
+                    t2 = self.transfer(A, dt_1, dt_2, _cid, cid)
                     if avg_act_dist < min_dist:
                         t2 *= math.e ** (-(avg_act_dist - min_dist)**2/(min_dist**2)/2)
                     if avg_act_dist > max_dist:

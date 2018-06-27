@@ -85,3 +85,162 @@ def make_map(grid, roadmap, cut_length, step_len):
             big_id += 1
             last_cids = cids
     return slice_map
+
+def cut_map_as_cells(grid, roadmap, step_len=1):
+    slice_map = dict()
+    for rid, locs in roadmap.iteritems():
+        coors = []
+        outside = False
+        for lat, lng in locs:
+            x, y, _, _ = utm.from_latlon(lat, lng)
+            if grid.utm_outside(x, y):
+#                 print 'road id=%d, outside' % rid
+                outside=True
+                break
+            coors.append((x, y))
+        if outside:
+            continue
+        line_road = LineString(coors)
+        line_length = line_road.length
+        line_count = int(math.ceil(line_length / float(step_len)))
+
+        last_cid = -1
+        cids = []
+        for i in range(line_count + 1):
+            cut_dist = step_len * i
+            cut_point = line_road.interpolate(cut_dist)
+            cid = grid.utm2cell(cut_point.x, cut_point.y)
+            if cid != last_cid:
+                cids.append(cid)
+            last_cid = cid
+        slice_map[rid] = cids
+        # if len(cids) == 1:
+        #     print rid, line_length, coors
+    return slice_map
+
+def find_roads(cid, dict_map, n_rid):
+    inter_roads = []
+    for rid, cids in dict_map.iteritems():
+        if rid!=n_rid and cid in cids:
+            inter_roads.append(rid)
+    return inter_roads
+
+
+def make_road_graph(grid, slice_map, price_map, version=0):
+    if version == 0:
+        return make_road_graph_1(grid, slice_map, price_map)
+    elif version == 1:
+        return make_road_graph_2(grid, slice_map, price_map)
+
+
+def make_road_graph_1(grid, slice_map, price_map):
+    dict_map = dict()
+    graph = dict()
+    dict_rid = dict()
+    segid = 0
+    for rid, cids in slice_map.iteritems():
+        dict_map[rid] = set(cids)
+    isol_rids = []
+    for rid, cids in slice_map.iteritems():
+        s_idx, e_idx = 0, 0
+        rid_inters = []
+        idxes = []
+        for idx, cid in enumerate(cids):
+            inter_rids = find_roads(cid, dict_map, rid)
+            if len(inter_rids)!=0:
+                rid_inters.extend(inter_rids)
+                idxes.append(idx)
+        if len(idxes) == 0:
+            isol_rids.append(rid)
+            continue
+
+        graph[rid] = [cids, rid_inters, price_map[rid]]
+    print 'isolated rids:', isol_rids
+    weights = dict()
+    for rid, data in graph.iteritems():
+        weights[rid] = data[-1]
+    return graph, weights
+
+
+def make_road_graph_2(grid, slice_map, price_map):
+    dict_map = dict()
+    graph = dict()
+    dict_rid = dict()
+    segid = 0
+    for rid, cids in slice_map.iteritems():
+        dict_map[rid] = set(cids)
+    isol_rids = []
+    for rid, cids in slice_map.iteritems():
+        s_idx, e_idx = 0, 0
+        rid_inters = dict()
+        idxes = []
+        for idx, cid in enumerate(cids):
+            inter_rids = find_roads(cid, dict_map, rid)
+            if len(inter_rids)!=0:
+                rid_inters[idx] = inter_rids
+                idxes.append(idx)
+        if len(idxes) == 0:
+            isol_rids.append(rid)
+            continue
+        if idxes[0] != 0:
+            idxes.insert(0,0)
+            rid_inters[0] = []
+        if idxes[-1] != len(cids) - 1:
+            idxes.append(len(cids) - 1)
+            rid_inters[len(cids)-1] = []
+
+        assert idxes[0]==0 and idxes[-1] == len(cids) - 1
+
+        segids = []
+        for s_idx, e_idx in pairwise(idxes):
+            segids.append(segid)
+            data = [cids[s_idx:e_idx+1], rid_inters[s_idx], rid_inters[e_idx], price_map[rid] * (e_idx - s_idx + 1) / float(len(cids))]
+            graph[segid] = data
+            segid += 1
+        dict_rid[rid] = segids
+    print 'isolated rids:', isol_rids
+    weights = dict()
+    for segid, data in graph.iteritems():
+        s_cid, e_cid = data[0][0], data[0][-1]
+        neighbors = []
+        for rid in data[1]:
+            for s_segid in dict_rid[rid]:
+                if s_cid in graph[s_segid][0]:
+                    neighbors.append(s_segid)
+        for rid in data[2]:
+            for s_segid in dict_rid[rid]:
+                if e_cid in graph[s_segid][0]:
+                    neighbors.append(s_segid)
+        graph[segid] = [data[0], neighbors]
+        weights[segid] = data[-1]
+    return graph, weights
+
+
+def dijkstra(graph, weights, sid, eid):
+    visited = {sid:weights[sid]}
+    path = {}
+    nodes = set(graph.keys())
+
+    if sid == eid:
+        return visited, path
+
+    while nodes:
+        min_node = None
+        for node in nodes:
+            if node in visited:
+                if min_node is None:
+                    min_node = node
+                elif visited[node] < visited[min_node]:
+                    min_node = node
+        if min_node is None:
+            break
+        nodes.remove(min_node)
+        cur_cost = visited[min_node]
+
+        for next_node in graph[min_node][1]:
+            cost = cur_cost + weights[next_node]
+            if next_node not in visited or cost < visited[next_node]:
+                visited[next_node] = cost
+                path[next_node] = min_node
+    return visited, path
+

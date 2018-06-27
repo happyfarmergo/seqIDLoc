@@ -5,6 +5,8 @@ import utm
 import math
 import os
 import sys
+import bisect
+import random
 import matplotlib
 import matplotlib.pyplot as plt
 from collections import defaultdict
@@ -20,30 +22,31 @@ def load_map(map_file):
             roadmap[rid] = [(lat, lng) for lat, lng in zip(lats, lngs)]
     return roadmap
 
+def load_price(edge_file):
+    pricemap = dict()
+    with open(edge_file) as f:
+        for line in f:
+            data = [float(d) for d in line.strip().split(' ')]
+            rid = int(data[0])
+            cost = data[-1]
+            pricemap[rid] = cost
+    return pricemap
+
 def load_gongcan(gongcan_file):
     gongcan = pd.read_csv(gongcan_file)
     # merged cell tower, origin cell tower
-    m_towers, o_towers = dict(), dict()
-    duplicate = defaultdict(list)
-    dup_ids = []
-    dup_set = set()
+    o_towers = dict()
+    t_towers = []
     for i in range(len(gongcan)):
         piece_data = gongcan.iloc[i]
-        rncid, cellid, lng, lat, azimuth, downtilt = \
-        piece_data['RNCID'], piece_data['CellID'], \
-        piece_data['Longitude'], piece_data['Latitude'], \
-        piece_data['Azimuth'], piece_data['Downtilt']
-        if (lat, lng) not in duplicate.keys():
-            m_towers[(rncid, cellid)] = (i, lat, lng, azimuth, downtilt)
-        o_towers[(rncid, cellid)] = (i, lat, lng, azimuth, downtilt)
-        duplicate[(lat, lng)].append(i)
-    print 'Unique Cell Tower: ', len(m_towers)
-    iterator = (ids for loc, ids in duplicate.iteritems() if len(ids) > 1)
-    for ids in iterator:
-        dup_ids.append(ids)
-        dup_set.update(ids)
-    print 'Duplicated cell towers:', dup_ids
-    return m_towers, o_towers, dup_ids, dup_set
+        rncid, cellid = piece_data['RNCID'], piece_data['CellID']
+        try:
+            lat, lng = piece_data['Latitude'], piece_data['Longitude']
+        except:
+            lat, lng = 0, 0
+        o_towers[(rncid, cellid)] = (i, lat, lng)
+        t_towers.append((lat, lng))
+    return o_towers, t_towers
 
 def parse_argv(feature):
     # merge_tower = feature['merge_tower']
@@ -61,43 +64,57 @@ def find_cell_id(old_id, dup_set, dup_ids):
     for ids in dup_ids:
         if old_id in ids:
             return ids[0]
-    
+
+def valid_bs(rid, cid):
+    return rid > 0 and cid > 0
+
 def load_data(data_file, gongcan_file, **feature):
     merge_tower, neighbor, with_rssi, radio_angle, context = parse_argv(feature)
-    m_towers, o_towers, dup_ids, dup_set = load_gongcan(gongcan_file)
-    towers = m_towers if merge_tower else o_towers
+    # m_towers, o_towers, dup_ids, dup_set = load_gongcan(gongcan_file)
+    # towers = m_towers if merge_tower else o_towers
+    towers, r_towers = load_gongcan(gongcan_file)
     db = dict()
     db_gps = dict()
     df = pd.read_csv(data_file)
     last_stp = 0
     dup_cnt = 0
+    rssi_indices = sorted(random.sample(range(len(df)), int(len(df) * with_rssi)))
     for i, piece_data in df.iterrows():
-        rid_1, cid_1, rssi_1, rid_2, cid_2, rssi_2, lat, lng, speed, tr_id, timestp = \
+        rid_1, cid_1, rssi_1, rid_2, cid_2, rssi_2, rid_3, cid_3, rssi_3, lat, lng, speed, tr_id, timestp = \
         piece_data['RNCID_1'], piece_data['CellID_1'], piece_data['Dbm_1'], \
         piece_data['RNCID_2'], piece_data['CellID_2'], piece_data['Dbm_2'], \
+        piece_data['RNCID_3'], piece_data['CellID_3'], piece_data['Dbm_3'], \
         piece_data['Latitude'], piece_data['Longitude'], piece_data['Speed'], \
         int(piece_data['TrajID']), int(piece_data['MRTime']) / 1000
         if last_stp == timestp:
             dup_cnt += 1
             continue
-        index_1 = o_towers[(rid_1, cid_1)][0] if (rid_1, cid_1) in o_towers.keys() else -1
-        if index_1 == -1:
-            print 'data error! BestCellID is wrong!', 'tr_id=%d, idx=%d, (%s, %s)' % (tr_id, i, rid_1, cid_1)
-        index_2 = o_towers[(rid_2, cid_2)][0] if (rid_2, cid_2) in o_towers.keys() else -1
+        index_1 = towers[(rid_1, cid_1)][0]
+        index_2 = towers[(rid_2, cid_2)][0] if (rid_2, cid_2) in towers.keys() else -1
+        index_3 = towers[(rid_3, cid_3)][0] if (rid_3, cid_3) in towers.keys() else -1
         x, y, _, _ = utm.from_latlon(lat, lng)
-        if merge_tower:
-            index_1 = find_cell_id(index_1, dup_set, dup_ids)
-            index_2 = find_cell_id(index_2, dup_set, dup_ids)
         # 拼装输入数据特征
         point = (x, y, index_1, speed, timestp)
         point_gps = (lat, lng, index_1, speed, timestp)
-        if neighbor:
+        if neighbor==2:
             point = (x, y, index_1, index_2, speed, timestp)
             point_gps = (lat, lng, index_1, index_2, speed, timestp)
-        if with_rssi:
-            rssi_1, rssi_2 = int(rssi_1 / 10) * 10, int(rssi_2 / 10) * 10
-            point = (x, y, index_1, rssi_1, speed, timestp) if not neighbor else (x, y, index_1, rssi_1, index_2, rssi_2, speed, timestp)
-            point_gps = (lat, lng, index_1, rssi_1, speed, timestp) if not neighbor else (lat, lng, index_1, rssi_1, index_2, rssi_2, speed, timestp)
+        if neighbor==3:
+            point = (x, y, index_1, index_2, index_3, speed, timestp)
+            point_gps = (lat, lng, index_1, index_2, index_3, speed, timestp)
+        if len(rssi_indices)!=0:
+            if i in rssi_indices:
+                rssi_1, rssi_2, rssi_3 = int(rssi_1 / 10) * 10, int(rssi_2 / 10) * 10, int(rssi_3 / 10) * 10
+            else:
+                rssi_1, rssi_2, rssi_3 = -200, -200, -200
+            point = (x, y, index_1, rssi_1, speed, timestp)
+            point_gps = (lat, lng, index_1, rssi_1, speed, timestp)
+            if neighbor == 2:
+                point = (x, y, index_1, rssi_1, index_2, rssi_2, speed, timestp)
+                point_gps = (lat, lng, index_1, rssi_1, index_2, rssi_2, speed, timestp)
+            elif neighbor == 3:
+                point = (x, y, index_1, rssi_1, index_2, rssi_2, index_3, rssi_3, speed, timestp)
+                point_gps = (lat, lng, index_1, rssi_1, index_2, rssi_2, index_3, rssi_3, speed, timestp)
         if not db.has_key(tr_id):
             db[tr_id] = []
         if not db_gps.has_key(tr_id):
@@ -107,11 +124,11 @@ def load_data(data_file, gongcan_file, **feature):
         last_stp = timestp
     print 'Totally duplicate:', dup_cnt
     if context:
-        db = refeature(db)
-        db_gps = refeature(db_gps)
-    return db, db_gps, towers
+        db = recontext(db)
+        db_gps = recontext(db_gps)
+    return db, db_gps, r_towers
 
-def refeature(db):
+def recontext(db):
     new_db = dict()
     for tr_id, traj in db.iteritems():
         new_traj = []

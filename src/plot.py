@@ -87,6 +87,17 @@ def draw_cells(kdtree, ca, axis, color, debug=False):
             # break
         cnt += 1
 
+def draw_heatmap(cell_bounds, cells, tower, ca, axis, debug=False):
+    tx, ty, _, _ = utm.from_latlon(tower[-2], tower[-1])
+    ca.text(tx, ty, 'T', color='r', fontsize=14)
+    for cid, cnt in cells.iteritems():
+        x0, y0, x1, y1 = cell_bounds[cid]
+        # mx, my = (x0 + x1) / 2, (y0 + y1) / 2
+        mx, my = x0, y0
+        # rec = Rectangle((x0, y0), width=x1 - x0, height=y1 - y0, ec=color, fill=False)
+        if debug:
+            ca.text(mx, my, cnt, color='b', fontsize=10)
+        # ca.add_patch(rec)
 
 def draw_map(roadmap, ca, axis, debug=False):
     for rid, locs in roadmap.iteritems():
